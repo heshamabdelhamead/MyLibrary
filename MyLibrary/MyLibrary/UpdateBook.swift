@@ -9,7 +9,6 @@ import SwiftUI
 
 struct UpdateBook: View {
     @Environment(\.dismiss) var dismiss
-    let book : Book
     @State private var status : Status = .onShelf
     @State private var title : String = ""
     @State private var author : String = ""
@@ -20,11 +19,13 @@ struct UpdateBook: View {
     @State private var dateFinished = Date.distantPast
     @State private var rating : Int? = 5
     @State private var firstAppear : Bool = true
+    let book : Book
+   // var changed : Bool = false
     
     var body: some View {
         HStack{
             Text("Status")
-            Picker("Status", selection: $status) {
+            Picker("", selection: $status) {
                 ForEach(Status.allCases ){ value in
                     Text(value.descr).tag(value)
                 }
@@ -99,21 +100,21 @@ struct UpdateBook: View {
             Text("Summary").foregroundStyle(.secondary)
             TextEditor(text: $summary)
                 .padding(5)
-                .overlay {
-                    RoundedRectangle(cornerRadius: 20).stroke(Color(uiColor: .tertiarySystemFill),lineWidth: 2)
-                }
+//                .overlay {
+//                    RoundedRectangle(cornerRadius: 20).stroke(Color(uiColor: .tertiarySystemFill),lineWidth: 2)
+//                }
                 }
         .padding()
         .textFieldStyle(.roundedBorder)
         .navigationTitle(title)
-        .navigationBarTitleDisplayMode(.inline)
+   //     .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            if changed {
+            if changed   { // to hide button for the first time
                 Button("Update") {
                     //update the book
                     book.author = author
                     book.rating = rating
-                    book.status = status
+                    book.status = status.rawValue
                     book.title = title
                     book.summary = summary
                     book.dateAdded = dateAdded
@@ -126,7 +127,7 @@ struct UpdateBook: View {
                 .buttonStyle(.borderedProminent)
             }
         }.onAppear{
-            status = book.status
+            status =   Status(rawValue: book.status)! // ?? .onShelf
             rating = book.rating
             title = book.title
             author = book.author
@@ -135,19 +136,19 @@ struct UpdateBook: View {
             dateStarted = book.dateStarted
             dateFinished = book.dateCompleted
         }
-        var changed : Bool {
-            status != book.status
-           || rating != book.rating
-           || title != book.title
-           || author != book.author
-           || summary != book.summary
-           || dateAdded != book.dateAdded
-           || dateStarted != book.dateStarted
-           || dateFinished != book.dateCompleted
-        }
+        
         
     }
-            
+    var changed : Bool {
+        status.rawValue !=  book.status
+       || rating != book.rating
+       || title != book.title
+       || author != book.author
+       || summary != book.summary
+       || dateAdded != book.dateAdded
+       || dateStarted != book.dateStarted
+       || dateFinished != book.dateCompleted
+    }
         }
         
 //        #Preview {

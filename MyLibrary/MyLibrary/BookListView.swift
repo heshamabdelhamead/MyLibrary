@@ -8,50 +8,21 @@
 import SwiftUI
 import SwiftData
 struct BookListView: View {
+    
     @State var  createNewBook: Bool = false
-    @Query var books: [Book]
-    @Environment(\.modelContext) private var context
+    @State private var sortedType : SortTypeEnum = .title
+    @State private var filter: String = ""
     var body: some View {
         NavigationStack {
-            VStack {
-                if books.isEmpty {
-                ContentUnavailableView("There is No Books ", systemImage:   "book.fill", description:Text( "You didn't added books yet"))
-                }else{
-                    List{
-                        ForEach(books){book in
-                            NavigationLink{
-                                UpdateBook(book: book)
-                            }label:{
-                                HStack{
-                                    book.icon
-                                    VStack{
-                                        Text(book.title).font(.title2)
-                                        Text(book.author).foregroundStyle(.secondary)
-                                        HStack{
-                                            if let rating = book.rating {
-                                                ForEach(1..<rating , id: \.self){_ in
-                                                    Image(systemName:"star.fill")
-                                                        .imageScale(.small)
-                                                        .foregroundStyle(.yellow)
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        .onDelete { indexSet in
-                            indexSet.forEach { index in
-                                let bookToDelete = books[index]
-                                context.delete(bookToDelete)
-                               
-                            }
-                        }
-                    }
-                    .listStyle(.plain)
+            Picker("Sort By", selection: $sortedType) {
+                ForEach(SortTypeEnum.allCases) { sortType in
+                   Text( "sorted by:" + sortType.rawValue).tag(sortType)
+                    
                 }
-            }
-        
+            }.buttonStyle(.bordered)
+                .foregroundStyle(Color.blue)
+            BookList(sortOrder: sortedType,filterString: filter)
+                .searchable(text: $filter, prompt: "filter by author ")
             .padding()
             .toolbar {
                 Button {

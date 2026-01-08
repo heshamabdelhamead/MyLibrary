@@ -16,7 +16,7 @@ class Book{
     var dateCompleted:Date
     var summary:String
     var rating: Int?
-    var status:Status
+    var status:Status.RawValue
     init(
         title: String,
         author: String,
@@ -34,17 +34,18 @@ class Book{
         self.dateCompleted = dateCompleted
         self.summary = summary
         self.rating = rating
-        self.status = status
+        self.status = status.rawValue
     }
     var icon: Image {
-        switch status {
-           case .onShelf:
+        switch Status(rawValue: status) {
+        case .onShelf:
             return Image(systemName: "checkmark.diamond.fill")
         case .inProgress:
             return Image(systemName: "book.fill")
         case .completed:
             return Image(systemName: "books.vertical.fill")
-          
+        case .none:
+            return Image(systemName: "checkmark.diamond.fill")
         }
     }
 }
@@ -55,7 +56,7 @@ enum Status : Int,Codable, Identifiable,CaseIterable{
     case onShelf, inProgress ,completed
     var descr : String{
         switch self {
-            case .onShelf:
+        case .onShelf:
             return "On Shelf"
         case .inProgress:
             return "In Progress"
