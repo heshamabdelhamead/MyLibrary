@@ -9,19 +9,19 @@ import SwiftUI
 import SwiftData
 
 struct BookList: View {
-    @Query private  var books: [Book]
+    @Query private  var books: [BookModel]
     @Environment(\.modelContext) private var context
     
     init(sortOrder: SortTypeEnum,filterString:String){
-        let sortDescriptors: [SortDescriptor<Book>] = switch sortOrder {
+        let sortDescriptors: [SortDescriptor<BookModel>] = switch sortOrder {
             case .title:
-            [SortDescriptor(\Book.title) ]
+            [SortDescriptor(\BookModel.title) ]
         case .author:
-            [SortDescriptor(\Book.author) ]
+            [SortDescriptor(\BookModel.author) ]
         case .status:
-            [SortDescriptor(\Book.status),SortDescriptor(\Book.title) ]
+            [SortDescriptor(\BookModel.status),SortDescriptor(\BookModel.title) ]
         }
-        let predicate = #Predicate<Book>{ book in book.title.localizedStandardContains(filterString) || book.author.localizedStandardContains(filterString) || filterString.isEmpty
+        let predicate = #Predicate<BookModel>{ book in book.title.localizedStandardContains(filterString) || book.author.localizedStandardContains(filterString) || filterString.isEmpty
         
         }
         _books = Query(filter: predicate, sort: sortDescriptors)
@@ -35,7 +35,7 @@ struct BookList: View {
                 List{
                     ForEach(books){book in
                         NavigationLink{
-                            UpdateBook(book: book)
+                            EditBook(book: book)
                         }label:{
                             HStack{
                                 book.icon

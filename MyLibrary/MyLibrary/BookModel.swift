@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 @Model
-class Book{
+class BookModel{
     var title:String
     var author:String
     var dateAdded:Date
@@ -17,6 +17,9 @@ class Book{
     var summary:String
     var rating: Int?
     var status:Status.RawValue
+    var recommended : String?
+   // @Relationship(deleteRule: .cascade )
+    var quotes : [QuoteModel]?
     init(
         title: String,
         author: String,
@@ -25,7 +28,8 @@ class Book{
         dateCompleted: Date=Date.distantPast,
         summary: String="",
         rating: Int? = nil,
-        status: Status = .onShelf
+        status: Status = .onShelf,
+        recommended: String? = nil
     ) {
         self.title = title
         self.author = author
@@ -35,6 +39,7 @@ class Book{
         self.summary = summary
         self.rating = rating
         self.status = status.rawValue
+        self.recommended = recommended
     }
     var icon: Image {
         switch Status(rawValue: status) {

@@ -10,12 +10,22 @@ import SwiftData
 
 @main
 struct MyLibraryApp: App {
+    let container : ModelContainer
     var body: some Scene {
         WindowGroup {
             BookListView()
-        }.modelContainer(for:Book.self)
+        }.modelContainer(container)
     }
     init () {
+        let schema = Schema([BookModel.self])
+        let config = ModelConfiguration("MyBooks",schema: schema)
+        do {
+            container = try ModelContainer(for: schema , configurations : config)
+        }
+        catch{
+            fatalError("can't create model container")
+        }
         print(URL.applicationSupportDirectory.path(percentEncoded: false))
+        
     }
 }

@@ -1,5 +1,5 @@
 //
-//  UpdateBook.swift
+//  EditBook.swift
 //  MyLibrary
 //
 //  Created by hesham abd elhamead on 01/01/2026.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct UpdateBook: View {
+struct EditBook: View {
     @Environment(\.dismiss) var dismiss
     @State private var status : Status = .onShelf
     @State private var title : String = ""
@@ -19,7 +19,8 @@ struct UpdateBook: View {
     @State private var dateFinished = Date.distantPast
     @State private var rating : Int? = 5
     @State private var firstAppear : Bool = true
-    let book : Book
+    @State private var recommendedBy : String = ""
+    let book : BookModel
    // var changed : Bool = false
     
     var body: some View {
@@ -66,7 +67,7 @@ struct UpdateBook: View {
                     // from completed to inProgress
                     dateFinished = Date.distantPast
                 } else if newValue == .inProgress && oldValue == . onShelf {
-                    //   Book has been started
+                    //   BookModel has been started
                     dateStarted = Date.now
                 } else if newValue == .completed && oldValue == . onShelf {
                     // Forgot to start book
@@ -96,13 +97,28 @@ struct UpdateBook: View {
             } label: {
                 Text("Author")
             }
+            LabeledContent {
+                TextField("", text: $recommendedBy)
+            } label: {
+                Text("recommended By")
+            }
            Divider()
             Text("Summary").foregroundStyle(.secondary)
             TextEditor(text: $summary)
                 .padding(5)
-//                .overlay {
-//                    RoundedRectangle(cornerRadius: 20).stroke(Color(uiColor: .tertiarySystemFill),lineWidth: 2)
-//                }
+                .overlay {
+                    RoundedRectangle(cornerRadius: 20).stroke(Color(uiColor: .tertiarySystemFill),lineWidth: 2)
+                }
+            NavigationLink {
+                QuotesListView(book: book)
+            } label: {
+                let count = book.quotes?.count ?? 0
+                Label( "^[\(count) Quotes](inflect:true)" , systemImage: "quote.opening")
+            }
+            .buttonStyle(.bordered)
+            .frame(maxWidth: .infinity,  alignment: .trailing)
+            .padding(.horizontal)
+
                 }
         .padding()
         .textFieldStyle(.roundedBorder)
@@ -120,6 +136,7 @@ struct UpdateBook: View {
                     book.dateAdded = dateAdded
                     book.dateStarted = dateStarted
                     book.dateCompleted = dateFinished
+                    book.recommended = recommendedBy
                     
                     dismiss()
                 }
@@ -135,6 +152,7 @@ struct UpdateBook: View {
             dateAdded = book.dateAdded
             dateStarted = book.dateStarted
             dateFinished = book.dateCompleted
+            recommendedBy = book.recommended ?? ""
         }
         
         
@@ -148,9 +166,10 @@ struct UpdateBook: View {
        || dateAdded != book.dateAdded
        || dateStarted != book.dateStarted
        || dateFinished != book.dateCompleted
+        || recommendedBy != book.recommended 
     }
         }
         
 //        #Preview {
-//            UpdateBook()
+//            EditBook()
 //        }
