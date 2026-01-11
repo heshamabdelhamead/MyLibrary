@@ -18,8 +18,10 @@ class BookModel{
     var rating: Int?
     var status:Status.RawValue
     var recommended : String?
-   // @Relationship(deleteRule: .cascade )
+    @Relationship(deleteRule: .cascade )
     var quotes : [QuoteModel]?
+    @Relationship( inverse: \GenreModel.books )
+    var genres : [GenreModel]?
     init(
         title: String,
         author: String,

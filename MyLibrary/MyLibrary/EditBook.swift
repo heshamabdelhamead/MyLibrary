@@ -20,6 +20,7 @@ struct EditBook: View {
     @State private var rating : Int? = 5
     @State private var firstAppear : Bool = true
     @State private var recommendedBy : String = ""
+    @State private var showGenres : Bool = false
     let book : BookModel
    // var changed : Bool = false
     
@@ -109,16 +110,39 @@ struct EditBook: View {
                 .overlay {
                     RoundedRectangle(cornerRadius: 20).stroke(Color(uiColor: .tertiarySystemFill),lineWidth: 2)
                 }
-            NavigationLink {
-                QuotesListView(book: book)
-            } label: {
-                let count = book.quotes?.count ?? 0
-                Label( "^[\(count) Quotes](inflect:true)" , systemImage: "quote.opening")
+            // genre stack view if there are genres
+            if let genres = book.genres, !genres.isEmpty{
+                ViewThatFits {
+                    GenreStackView(genres: genres)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        GenreStackView(genres: genres)
+                    }
+                }
             }
-            .buttonStyle(.bordered)
-            .frame(maxWidth: .infinity,  alignment: .trailing)
-            .padding(.horizontal)
-
+            
+            HStack{
+                //genre button
+                Button {
+                    showGenres.toggle()
+                }label: {
+                    Label("Genre", systemImage: "bookmark.fill")
+                }
+                .sheet(isPresented: $showGenres) {
+                    Genre(book : book)
+                }
+                
+                //quote view
+                
+                NavigationLink {
+                    QuotesListView(book: book)
+                } label: {
+                    let count = book.quotes?.count ?? 0
+                    Label( "^[\(count) Quotes](inflect:true)" , systemImage: "quote.opening")
+                }
+                .buttonStyle(.bordered)
+                .frame(maxWidth: .infinity,  alignment: .trailing)
+                .padding(.horizontal)
+            }
                 }
         .padding()
         .textFieldStyle(.roundedBorder)
