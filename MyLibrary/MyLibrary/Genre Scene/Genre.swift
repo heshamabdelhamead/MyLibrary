@@ -53,8 +53,11 @@ struct Genre: View {
                             }
                         }
                         .onDelete { indexSet in
+                    
                             indexSet.forEach { index in
                                 let genre = self.genres[index]
+                                //remove the genre form editBook scene in case of removing the genre
+                                book.genres?.removeAll(where: { $0.id == genre.id })
                                 modelContext.delete(genre)
                             }
                         }

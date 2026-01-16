@@ -88,7 +88,11 @@ struct QuotesListView: View {
                 withAnimation {
                     indexSet.forEach { index in
                         if let quote = book.quotes?[index]{
-                            modelContext.delete(quote)
+                            book.quotes?.forEach { curentQuote in
+                                if quote.id == curentQuote.id{
+                                    modelContext.delete(quote)
+                                }
+                            }
                         }
                         
                     }

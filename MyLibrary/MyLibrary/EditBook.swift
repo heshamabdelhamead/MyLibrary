@@ -9,7 +9,7 @@ import SwiftUI
 
 struct EditBook: View {
     @Environment(\.dismiss) var dismiss
-    @State private var status : Status = .onShelf
+    @State private var status : Status
     @State private var title : String = ""
     @State private var author : String = ""
     @State private var summary  = ""
@@ -18,12 +18,15 @@ struct EditBook: View {
     @State private var dateStarted = Date.distantPast
     @State private var dateFinished = Date.distantPast
     @State private var rating : Int? = 5
-    @State private var firstAppear : Bool = true
     @State private var recommendedBy : String = ""
     @State private var showGenres : Bool = false
     let book : BookModel
-   // var changed : Bool = false
-    
+    // var changed : Bool = false
+    init(book : BookModel){
+        self.book = book
+        _status = .init(initialValue: Status(rawValue: book.status) ?? Status.onShelf)
+        
+    }
     var body: some View {
         HStack{
             Text("Status")
@@ -38,19 +41,25 @@ struct EditBook: View {
         VStack(alignment: .leading){
             GroupBox{
                 LabeledContent {
-                    DatePicker("", selection: $dateAdded,displayedComponents: .date)
+                    switch status {
+                    case .onShelf:
+                        DatePicker("", selection: $dateAdded,displayedComponents: .date)
+                    case .inProgress,.completed:
+                        DatePicker("", selection: $dateAdded,in : ...dateStarted ,  displayedComponents: .date)
+                    }
+                   
                 } label: {
                     Text(" Date Added")
                 }
-                if status == .inProgress{
+                if status == .inProgress || status == .completed{
                     LabeledContent {
-                        DatePicker("", selection: $dateStarted,displayedComponents: .date)
+                        DatePicker("", selection: $dateStarted,in : dateAdded... , displayedComponents: .date)
                     } label: {
                         Text("Date Started")
                     }
                     if status == .completed{
                         LabeledContent {
-                            DatePicker("", selection: $dateFinished,displayedComponents: .date)
+                            DatePicker("", selection: $dateFinished,in : dateStarted... , displayedComponents: .date)
                         } label: {
                             Text("Date Finished")
                         }
@@ -61,7 +70,7 @@ struct EditBook: View {
             }
             .foregroundStyle(.secondary)
             .onChange(of: status) {oldValue, newValue in
-               if !firstAppear { if newValue == .onShelf {
+                if newValue == .onShelf {
                     dateStarted = Date.distantPast
                     dateFinished = Date.distantPast
                 } else if newValue == .inProgress && oldValue == . completed {
@@ -79,9 +88,8 @@ struct EditBook: View {
                     dateFinished = Date.now
                     
                 }
-                   firstAppear = false
-                }
-                    }
+                
+            }
             Divider()
             LabeledContent {
                 RatingsView(maxRating: 5, currentRating: $rating, width: 30)
@@ -103,7 +111,7 @@ struct EditBook: View {
             } label: {
                 Text("recommended By")
             }
-           Divider()
+            Divider()
             Text("Summary").foregroundStyle(.secondary)
             TextEditor(text: $summary)
                 .padding(5)
@@ -143,11 +151,11 @@ struct EditBook: View {
                 .frame(maxWidth: .infinity,  alignment: .trailing)
                 .padding(.horizontal)
             }
-                }
+        }
         .padding()
         .textFieldStyle(.roundedBorder)
         .navigationTitle(title)
-   //     .navigationBarTitleDisplayMode(.inline)
+        //     .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if changed   { // to hide button for the first time
                 Button("Update") {
@@ -168,7 +176,6 @@ struct EditBook: View {
                 .buttonStyle(.borderedProminent)
             }
         }.onAppear{
-            status =   Status(rawValue: book.status)! // ?? .onShelf
             rating = book.rating
             title = book.title
             author = book.author
@@ -178,22 +185,20 @@ struct EditBook: View {
             dateFinished = book.dateCompleted
             recommendedBy = book.recommended ?? ""
         }
-        
-        
     }
     var changed : Bool {
         status.rawValue !=  book.status
-       || rating != book.rating
-       || title != book.title
-       || author != book.author
-       || summary != book.summary
-       || dateAdded != book.dateAdded
-       || dateStarted != book.dateStarted
-       || dateFinished != book.dateCompleted
-        || recommendedBy != book.recommended 
+        || rating != book.rating
+        || title != book.title
+        || author != book.author
+        || summary != book.summary
+        || dateAdded != book.dateAdded
+        || dateStarted != book.dateStarted
+        || dateFinished != book.dateCompleted
+        || recommendedBy != book.recommended
     }
-        }
-        
+}
+
 //        #Preview {
 //            EditBook()
 //        }
