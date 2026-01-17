@@ -16,7 +16,7 @@ struct BookListView: View {
         NavigationStack {
             Picker("Sort By", selection: $sortedType) {
                 ForEach(SortTypeEnum.allCases) { sortType in
-                   Text( "sorted by:" + sortType.rawValue).tag(sortType)
+                   Text( sortType.rawValue).tag(sortType)
                     
                 }
             }.buttonStyle(.bordered)

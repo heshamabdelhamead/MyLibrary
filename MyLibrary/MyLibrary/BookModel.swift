@@ -61,7 +61,7 @@ enum Status : Int,Codable, Identifiable,CaseIterable{
         self
     }
     case onShelf, inProgress ,completed
-    var descr : String{
+    var descr : LocalizedStringResource {
         switch self {
         case .onShelf:
             return "On Shelf"

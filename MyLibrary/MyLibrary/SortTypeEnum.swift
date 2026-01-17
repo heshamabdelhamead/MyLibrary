@@ -6,7 +6,7 @@
 //
 
 import Foundation
-enum SortTypeEnum : String, Identifiable, CaseIterable {
+enum SortTypeEnum : LocalizedStringResource, Identifiable, CaseIterable {
     case title, author, status
     var id: Self { self }
 }
