@@ -9,14 +9,14 @@ import SwiftUI
 import SwiftData
 @Model
 class BookModel{
-    var title:String
-    var author:String
-    var dateAdded:Date
-    var  dateStarted : Date
-    var dateCompleted:Date
-    var summary:String
+    var title:String = ""
+    var author:String = ""
+    var dateAdded:Date = Date.now
+    var  dateStarted : Date = Date.distantPast
+    var dateCompleted:Date = Date.distantPast
+    var summary:String = ""
     var rating: Int?
-    var status:Status.RawValue
+    var status:Status.RawValue = Status.onShelf.rawValue
     var recommended : String?
     @Relationship(deleteRule: .cascade )
     var quotes : [QuoteModel]?

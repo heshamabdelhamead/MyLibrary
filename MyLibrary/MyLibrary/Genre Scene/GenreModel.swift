@@ -9,8 +9,8 @@ import SwiftUI
 import SwiftData
 @Model
 class GenreModel {
-    var name : String
-    var color : String
+    var name : String = ""
+    var color : String = "ff0000" 
     var books : [BookModel]?
     init(name: String, color: String) {
         self.name = name
