@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct EditBook: View {
     @Environment(\.dismiss) var dismiss
@@ -20,8 +21,10 @@ struct EditBook: View {
     @State private var rating : Int? = 5
     @State private var recommendedBy : String = ""
     @State private var showGenres : Bool = false
+    @State private var selectedCoverItem : PhotosPickerItem?
+    @State private var selectedCoverImageData : Data?
+    
     let book : BookModel
-    // var changed : Bool = false
     init(book : BookModel){
         self.book = book
         _status = .init(initialValue: Status(rawValue: book.status) ?? Status.onShelf)
@@ -91,20 +94,55 @@ struct EditBook: View {
                 
             }
             Divider()
-            LabeledContent {
-                RatingsView(maxRating: 5, currentRating: $rating, width: 30)
-            } label: {
-                Text("Rating")
-            }
-            LabeledContent {
-                TextField("", text: $title)
-            } label: {
-                Text("Title")
-            }
-            LabeledContent {
-                TextField("", text: $author)
-            } label: {
-                Text("Author")
+            HStack {
+                PhotosPicker(selection: $selectedCoverItem ,matching: .images, photoLibrary: .shared()) {
+                    Group {
+                        if let selectedCoverImageData , let uiImage = UIImage(data: selectedCoverImageData) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .scaledToFit()
+                        }else {
+                            Image(systemName: "photo")
+                                .resizable()
+                                .scaledToFit()
+                                .tint(.primary)
+                        }
+                    }
+                    .frame(width: 100, height: 100)
+                    .overlay(alignment: .bottomTrailing) {
+                        if let selectedCoverItem{
+                            Button {
+                                self.selectedCoverItem = nil
+                                selectedCoverImageData = nil
+                            } label: {
+                                Image(systemName: "x.circle.fill")
+                                    .foregroundStyle(.red)
+                            }
+                            
+                        }
+                    }
+                }
+                
+                
+                
+                VStack {
+                    LabeledContent {
+                        RatingsView(maxRating: 5, currentRating: $rating, width: 30)
+                    } label: {
+                        Text("Rating")
+                    }
+                    
+                    LabeledContent {
+                        TextField("", text: $title)
+                    } label: {
+                        Text("Title")
+                    }
+                    LabeledContent {
+                        TextField("", text: $author)
+                    } label: {
+                        Text("Author")
+                    }
+                }
             }
             LabeledContent {
                 TextField("", text: $recommendedBy)
@@ -169,7 +207,7 @@ struct EditBook: View {
                     book.dateStarted = dateStarted
                     book.dateCompleted = dateFinished
                     book.recommended = recommendedBy
-                    
+                    book.bookCover = selectedCoverImageData
                     dismiss()
                 }
                 
@@ -184,6 +222,12 @@ struct EditBook: View {
             dateStarted = book.dateStarted
             dateFinished = book.dateCompleted
             recommendedBy = book.recommended ?? ""
+            selectedCoverImageData = book.bookCover
+        }
+        .task(id: selectedCoverItem) {
+            if let data = try? await selectedCoverItem?.loadTransferable(type: Data.self){
+                selectedCoverImageData = data
+            }
         }
     }
     var changed : Bool {
@@ -196,9 +240,11 @@ struct EditBook: View {
         || dateStarted != book.dateStarted
         || dateFinished != book.dateCompleted
         || recommendedBy != book.recommended
+        || selectedCoverImageData != book.bookCover
+        
     }
 }
 
-//        #Preview {
-//            EditBook()
-//        }
+        #Preview {
+            EditBook(book: BookModel(title: "test", author: "hesham"))
+        }

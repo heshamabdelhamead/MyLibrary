@@ -22,6 +22,8 @@ class BookModel{
     var quotes : [QuoteModel]?
     @Relationship( inverse: \GenreModel.books )
     var genres : [GenreModel]?
+    @Attribute(.externalStorage)
+    var bookCover :Data?
     init(
         title: String,
         author: String,
