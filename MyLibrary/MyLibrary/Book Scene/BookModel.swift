@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftData
 @Model
 class BookModel{
+  //  #Index<BookModel>([\.title],[\.genres]) // 
     var title:String = ""
     var author:String = ""
     var dateAdded:Date = Date.now

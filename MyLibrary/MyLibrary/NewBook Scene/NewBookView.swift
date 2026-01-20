@@ -33,11 +33,11 @@ struct NewBookView: View {
 
             }
             .toolbar{
-//                ToolbarItem(placement: .topBarLeading) {
-//                        Button("Cancel") {
-//                            dismiss()
-//                        }
-//                    }
+                ToolbarItem(placement: .topBarLeading) {
+                        Button("Cancel") {
+                            dismiss()
+                        }
+                    }
                
             }
         }

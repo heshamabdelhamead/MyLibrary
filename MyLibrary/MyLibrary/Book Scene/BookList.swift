@@ -69,11 +69,6 @@ struct BookList: View {
                             let bookToDelete = books[index]
                             context.delete(bookToDelete)
                         }
-//                            do {
-//                                try  context.save()
-//                            }catch {
-//                                print("there is an error saving the book")
-//                            }
                    }
                 }
                 .listStyle(.plain)
